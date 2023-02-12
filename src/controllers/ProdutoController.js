@@ -1,3 +1,6 @@
+const fs = require("fs");
+const path = require("path");
+
 const ProdutoRepository = require("../repositories/ProdutoRepository.js");
 
 class ProdutoController{
@@ -13,6 +16,8 @@ class ProdutoController{
 
     static async criar(req, res) {
         try {
+            req.body.foto = req.file.filename;
+
             let novoProduto = await ProdutoRepository.criar(req.body);
             return res.status(201).json(novoProduto);
         } catch (error) {
@@ -46,11 +51,27 @@ class ProdutoController{
                 return res.status(404).json({"erro": "Id não encontrado"});
             }
 
+            ProdutoController.excluirImagem(produtoCadastrado.foto);            
+            
             await ProdutoRepository.excluir(req.params.id);
             return res.status(204).json();
         } catch (error) {
+            console.log(error);
             return res.status(500).json({"erro": "Erro ao processar a requisição."});
         }
+    }
+
+    static excluirImagem(foto){
+        let parentDirectory = path.join(__dirname, "..");
+        let pathName = `${parentDirectory}/public/img/${foto}`;
+
+        fs.unlink(pathName, (error) => {
+            if (error) {
+              console.error(`Erro ao excluir o arquivo: ${error}`);
+            } else {
+              console.log(`Arquivo excluído com sucesso`);
+            }
+          });
     }
 }
 
