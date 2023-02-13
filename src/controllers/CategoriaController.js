@@ -36,7 +36,7 @@ class CategoriaController{
 
             let nomeJaCadastrado = await CategoriaRepository.buscarPorNome(req.body.nome);
 
-            if(nomeJaCadastrado != null && categoriaCadastrada.id != nomeJaCadastrado){
+            if(nomeJaCadastrado != null && categoriaCadastrada.id != nomeJaCadastrado.id){
                 return res.status(400).json({"erro": "Nome de categoria já cadastrado"});
             }
 
